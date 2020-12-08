@@ -58,10 +58,9 @@ class spiralcipher:
         self.cipher_entry.insert(0, x)
 
     def decrypt_callback(self):
-        # key = self.get_key()
-        # plaintext = decrypt(self.cipher_entry.get(), key)
-        # self.plain_entry.delete(0, tk.END)
-        self.plain_entry.insert(0, plaintext)
+        x = decrypt(self.cipher_entry.get())
+        self.plain_entry.delete(0, tk.END)
+        self.plain_entry.insert(0, x)
 
 
 def store_spiral(array, plaintext, l):
@@ -90,6 +89,13 @@ def store_spiral(array, plaintext, l):
             dy = directions[direction][1]
             x = x+dx
             y = y+dy
+            
+def store_column(array, ciphertext):
+    x = 0
+    for j in range(len(array[0])):
+        for i in range(len(array)):
+            array[i][j] = ciphertext[x]
+            x = x+1
 
 
 def encrypt(plaintext):
@@ -111,14 +117,58 @@ def encrypt(plaintext):
     return(x)
 
 
-def decrypt(ciphertext, key):
-    # plaintext = ""
-    # for char in ciphertext.upper():
-    #     if char.isalpha():
-    #         plaintext += chr((ord(char) - key - 65) % 26 + 65)
-    #     else:
-    #         plaintext += char
-    return plaintext
+def decrypt(ciphertext):
+    l = len(ciphertext)
+    sl = int(ceil(sqrt(l)))
+    # make empty 2d array of [ ['','', ... ], .... ]
+    ar2 = [['' for i in range(sl)] for j in range(sl)]
+    store_column(ar2, ciphertext)
+
+    k = 0
+    l = 0
+    m = sl
+    n = sl
+    x = ''
+    ''' k - starting row index 
+        m - ending row index 
+        l - starting column index 
+        n - ending column index 
+        i - iterator '''
+
+    while (k < m and l < n):
+
+        # Print the first row from
+        # the remaining rows
+        for i in range(l, n):
+            x += ar2[k][i]
+
+        k += 1
+
+        # Print the last column from
+        # the remaining columns
+        for i in range(k, m):
+            x += ar2[i][n - 1]
+
+        n -= 1
+
+        # Print the last row from
+        # the remaining rows
+        if (k < m):
+
+            for i in range(n - 1, (l - 1), -1):
+                x += ar2[m - 1][i]
+
+            m -= 1
+
+        # Print the first column from
+        # the remaining columns
+        if (l < n):
+            for i in range(m - 1, k - 1, -1):
+                x += ar2[i][l]
+
+            l += 1
+
+    return(x)
 
 
 if __name__ == "__main__":
